@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0f0c29">
 <title>Ultra Tic Tac Toe</title>
 <script src="https://cdn.tailwindcss.com"></script>
@@ -15,28 +15,27 @@
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
+  -webkit-user-select: none;
   user-select: none;
+  box-sizing: border-box;
 }
 
-body {
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   font-family: 'Inter', sans-serif;
-  min-height: 100vh;
-  min-height: 100dvh;
   background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-  overflow-x: hidden;
 }
 
-@supports (padding-top: env(safe-area-inset-top)) {
-  .safe-top { padding-top: env(safe-area-inset-top); }
-  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-}
-
-.glass {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+/* Safe area support */
+.safe-area {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 /* Menu Screen */
@@ -50,17 +49,19 @@ body {
   padding: 20px;
   z-index: 50;
   background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-  transition: opacity 0.5s, transform 0.5s;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .menu-screen.hidden {
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transform: scale(1.1);
 }
 
 .menu-title {
-  font-size: clamp(2.5rem, 10vw, 4rem);
+  font-size: clamp(2rem, 8vw, 3.5rem);
   font-weight: 800;
   text-align: center;
   margin-bottom: 0.5rem;
@@ -78,27 +79,29 @@ body {
 
 .menu-subtitle {
   color: rgba(255, 255, 255, 0.6);
-  font-size: 1rem;
-  margin-bottom: 3rem;
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
   text-align: center;
 }
 
 .menu-btn {
-  width: min(280px, 80vw);
-  padding: 18px 32px;
-  margin: 10px 0;
-  border-radius: 16px;
-  font-size: 1.1rem;
+  width: min(260px, 70vw);
+  padding: 16px 24px;
+  margin: 8px 0;
+  border-radius: 14px;
+  font-size: 1rem;
   font-weight: 700;
   border: none;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   position: relative;
   overflow: hidden;
+  touch-action: manipulation;
+  -webkit-appearance: none;
 }
 
 .menu-btn:active {
@@ -108,20 +111,7 @@ body {
 .menu-btn-primary {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
-}
-
-.menu-btn-primary::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.6s;
-}
-
-.menu-btn-primary:hover::before {
-  transform: translateX(100%);
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
 }
 
 .menu-btn-secondary {
@@ -130,71 +120,73 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.menu-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
 /* Game Screen */
 .game-screen {
   display: none;
-  min-height: 100vh;
-  padding-bottom: 80px;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 100px;
 }
 
 .game-screen.active {
   display: block;
-  animation: fadeIn 0.5s ease;
+  animation: fadeIn 0.3s ease;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Settings Modal */
 .settings-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.95);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   display: none;
   align-items: center;
   justify-content: center;
   z-index: 100;
   padding: 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .settings-modal.active {
   display: flex;
-  animation: fadeIn 0.3s ease;
 }
 
 .settings-content {
-  width: min(360px, 90vw);
+  width: min(340px, 90vw);
   background: linear-gradient(135deg, #1a1a2e, #16213e);
-  border-radius: 24px;
-  padding: 24px;
+  border-radius: 20px;
+  padding: 20px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  max-height: 80vh;
+  max-height: 85vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .settings-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .settings-title {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 700;
 }
 
 .close-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.1);
   border: none;
   color: white;
@@ -202,47 +194,50 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  font-size: 18px;
+  touch-action: manipulation;
 }
 
 .close-btn:active {
-  transform: scale(0.95);
   background: rgba(255, 255, 255, 0.2);
+  transform: scale(0.95);
 }
 
 .setting-item {
-  margin-bottom: 20px;
-  padding: 16px;
+  margin-bottom: 16px;
+  padding: 14px;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
+  border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .setting-label {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin-bottom: 8px;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .setting-label svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   opacity: 0.8;
+  flex-shrink: 0;
 }
 
 /* Toggle Switch */
 .toggle-switch {
   position: relative;
-  width: 52px;
-  height: 28px;
+  width: 48px;
+  height: 26px;
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 14px;
+  border-radius: 13px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: background 0.3s;
   margin-left: auto;
+  flex-shrink: 0;
 }
 
 .toggle-switch.active {
@@ -254,29 +249,29 @@ body {
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   background: white;
   border-radius: 50%;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
 
 .toggle-switch.active::after {
-  transform: translateX(24px);
+  transform: translateX(22px);
 }
 
 /* Theme Grid */
 .theme-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-top: 12px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .theme-option {
-  aspect-ratio: 16/10;
-  border-radius: 12px;
+  aspect-ratio: 1;
+  border-radius: 10px;
   cursor: pointer;
   border: 2px solid transparent;
   transition: all 0.2s;
@@ -286,7 +281,8 @@ body {
 
 .theme-option.active {
   border-color: white;
-  box-shadow: 0 0 20px rgba(255,255,255,0.3);
+  box-shadow: 0 0 15px rgba(255,255,255,0.3);
+  transform: scale(1.05);
 }
 
 .theme-option::after {
@@ -296,7 +292,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: bold;
   opacity: 0;
   transition: opacity 0.2s;
@@ -314,49 +310,59 @@ body {
 .theme-sunset { background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb); }
 .theme-midnight { background: linear-gradient(135deg, #2c3e50, #34495e, #2c3e50); }
 
-/* Game Board */
+/* Game Board - FIXED CENTERING */
+.game-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 16px;
+}
+
 #board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: clamp(8px, 2vw, 12px);
-  width: min(95vw, 380px);
-  aspect-ratio: 1;
+  gap: 10px;
+  width: min(92vw, 360px);
+  height: min(92vw, 360px);
   margin: 0 auto;
-  padding: clamp(8px, 2vw, 12px);
+  padding: 10px;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 20px;
+  border-radius: 16px;
   box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .cell {
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(2rem, 8vw, 3rem);
+  font-size: clamp(1.8rem, 7vw, 2.5rem);
   font-weight: 800;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s ease;
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  touch-action: manipulation;
+  -webkit-appearance: none;
 }
 
 .cell:active:not(.taken) {
-  transform: scale(0.95);
+  transform: scale(0.92);
   background: rgba(255, 255, 255, 0.2);
 }
 
 .cell.x {
   color: #60a5fa;
-  text-shadow: 0 0 20px rgba(96, 165, 250, 0.6);
+  text-shadow: 0 0 15px rgba(96, 165, 250, 0.6);
   animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .cell.o {
   color: #f472b6;
-  text-shadow: 0 0 20px rgba(244, 114, 182, 0.6);
+  text-shadow: 0 0 15px rgba(244, 114, 182, 0.6);
   animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -376,17 +382,139 @@ body {
 }
 
 @keyframes winPulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 20px currentColor; }
-  50% { transform: scale(1.05); box-shadow: 0 0 40px currentColor; }
+  0%, 100% { transform: scale(1); box-shadow: 0 0 15px currentColor; }
+  50% { transform: scale(1.03); box-shadow: 0 0 30px currentColor; }
 }
 
-/* Bottom Nav */
+/* Header Stats */
+.game-header {
+  width: 100%;
+  padding: 12px 16px;
+  padding-top: calc(12px + env(safe-area-inset-top));
+}
+
+.stats-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  min-width: 60px;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+  margin-top: 3px;
+}
+
+/* Mode Selector */
+.mode-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px;
+  margin: 0 -4px 12px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  width: 100%;
+  max-width: 400px;
+}
+
+.mode-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.mode-btn {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.2s;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+}
+
+.mode-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: transparent;
+  color: white;
+}
+
+/* Status Bar */
+.status-container {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.status-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.turn-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #60a5fa;
+  box-shadow: 0 0 8px #60a5fa;
+  animation: blink 2s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.timer-bar-container {
+  width: 120px;
+  height: 3px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  margin: 8px auto 0;
+  overflow: hidden;
+}
+
+.timer-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #60a5fa, #f472b6);
+  width: 0%;
+  transition: width 0.3s linear;
+}
+
+/* Bottom Navigation */
 .bottom-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(15, 12, 41, 0.95);
+  background: rgba(15, 12, 41, 0.98);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -399,120 +527,79 @@ body {
 
 .bottom-nav.active {
   display: flex;
-  animation: slideUp 0.3s ease;
 }
 
 .nav-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 8px 16px;
-  border-radius: 12px;
+  gap: 3px;
+  padding: 6px 12px;
+  border-radius: 10px;
   transition: all 0.2s;
   color: rgba(255, 255, 255, 0.6);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
-  min-width: 64px;
   background: none;
   border: none;
   cursor: pointer;
+  touch-action: manipulation;
+  min-width: 56px;
 }
 
 .nav-btn:active {
-  transform: scale(0.95);
   background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-btn svg {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   stroke-width: 2;
 }
 
-/* Mode Selector */
-.mode-scroll {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 4px;
-  margin: 0 -4px;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.mode-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.mode-btn {
-  flex-shrink: 0;
-  padding: 10px 20px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.8);
-  transition: all 0.2s;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.mode-btn.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-color: transparent;
-  color: white;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-}
-
-.stat-card {
-  text-align: center;
-  padding: 12px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  min-width: 70px;
-}
-
-.stat-value {
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  opacity: 0.7;
-  margin-top: 4px;
-}
-
-.status-bar {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: 20px;
+/* Back Button */
+.back-btn {
+  position: fixed;
+  top: calc(12px + env(safe-area-inset-top));
+  left: 12px;
+  z-index: 45;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.1);
-  font-weight: 600;
-  font-size: 14px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
 }
 
-.turn-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #60a5fa;
-  box-shadow: 0 0 10px #60a5fa;
-  animation: blink 2s infinite;
+.back-btn.active {
+  display: flex;
 }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+.back-btn:active {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(0.95);
 }
 
+/* Ads */
+.ad-container {
+  min-height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 12px auto;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.2);
+  width: min(100%, 400px);
+}
+
+/* Confetti */
 #confetti-canvas {
   position: fixed;
   top: 0;
@@ -523,72 +610,81 @@ body {
   z-index: 30;
 }
 
-.ad-container {
-  min-height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 8px 0;
-  border-radius: 12px;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.2);
-}
-
-.back-btn {
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  z-index: 45;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+/* Utility */
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  cursor: pointer;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
 }
 
-.back-btn.active {
-  display: flex;
+.text-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #f472b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.back-btn:active {
-  transform: scale(0.95);
-  background: rgba(255, 255, 255, 0.2);
+/* Fix for iframe embedding */
+@media (max-width: 400px) {
+  #board {
+    width: 95vw;
+    height: 95vw;
+  }
+  
+  .menu-btn {
+    width: 85vw;
+  }
+}
+
+/* Landscape mode fix */
+@media (max-height: 500px) and (orientation: landscape) {
+  .menu-screen {
+    justify-content: flex-start;
+    padding-top: 20px;
+  }
+  
+  .menu-title {
+    font-size: 1.8rem;
+    margin-bottom: 0.3rem;
+  }
+  
+  .menu-subtitle {
+    margin-bottom: 1rem;
+  }
+  
+  #board {
+    width: 70vh;
+    height: 70vh;
+  }
 }
 </style>
 </head>
-<body class="text-white safe-top safe-bottom">
+<body class="text-white safe-area">
 
 <canvas id="confetti-canvas"></canvas>
 
-<!-- Main Menu Screen -->
+<!-- Main Menu -->
 <div class="menu-screen" id="menuScreen">
   <h1 class="menu-title">TIC TAC TOE</h1>
   <p class="menu-subtitle">Ultra Edition</p>
   
-  <button class="menu-btn menu-btn-primary" onclick="startGame()">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+  <button class="menu-btn menu-btn-primary" id="playBtn">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
       <polygon points="5 3 19 12 5 21 5 3"></polygon>
     </svg>
     PLAY NOW
   </button>
   
-  <button class="menu-btn menu-btn-secondary" onclick="openSettings()">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <button class="menu-btn menu-btn-secondary" id="settingsBtn">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <circle cx="12" cy="12" r="3"></circle>
       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
     </svg>
     SETTINGS
   </button>
   
-  <!-- Menu Ad -->
-  <div class="ad-container glass mt-8 w-full max-w-sm">
+  <div class="ad-container glass mt-6">
     <ins class="adsbygoogle"
          style="display:block;width:320px;height:50px"
          data-ad-client="ca-pub-6851464163673391"
@@ -603,10 +699,9 @@ body {
   <div class="settings-content">
     <div class="settings-header">
       <h2 class="settings-title">Settings</h2>
-      <button class="close-btn" onclick="closeSettings()">✕</button>
+      <button class="close-btn" id="closeSettings">✕</button>
     </div>
     
-    <!-- Sound Setting -->
     <div class="setting-item">
       <div class="setting-label">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -614,12 +709,11 @@ body {
           <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
         </svg>
         Sound Effects
-        <div class="toggle-switch active" id="soundToggle" onclick="toggleSound()"></div>
+        <div class="toggle-switch active" id="soundToggle"></div>
       </div>
-      <p class="text-xs text-gray-400 mt-2">Play sounds during gameplay</p>
+      <p class="text-xs text-gray-400">Play sounds during gameplay</p>
     </div>
     
-    <!-- Music Setting -->
     <div class="setting-item">
       <div class="setting-label">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -628,26 +722,24 @@ body {
           <circle cx="18" cy="16" r="3"></circle>
         </svg>
         Background Music
-        <div class="toggle-switch" id="musicToggle" onclick="toggleMusic()"></div>
+        <div class="toggle-switch" id="musicToggle"></div>
       </div>
-      <p class="text-xs text-gray-400 mt-2">Ambient background music</p>
+      <p class="text-xs text-gray-400">Ambient background music</p>
     </div>
     
-    <!-- Vibration -->
     <div class="setting-item">
       <div class="setting-label">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
         </svg>
         Haptic Feedback
-        <div class="toggle-switch active" id="hapticToggle" onclick="toggleHaptic()"></div>
+        <div class="toggle-switch active" id="hapticToggle"></div>
       </div>
-      <p class="text-xs text-gray-400 mt-2">Vibrate on moves and wins</p>
+      <p class="text-xs text-gray-400">Vibrate on moves and wins</p>
     </div>
     
-    <!-- Theme Selection -->
     <div class="setting-item">
-      <div class="setting-label" style="margin-bottom: 8px;">
+      <div class="setting-label" style="margin-bottom: 4px;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="5"></circle>
           <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
@@ -655,33 +747,32 @@ body {
         Theme Color
       </div>
       <div class="theme-grid">
-        <div class="theme-option theme-default active" onclick="setTheme('default', this)" title="Default"></div>
-        <div class="theme-option theme-fire" onclick="setTheme('fire', this)" title="Fire"></div>
-        <div class="theme-option theme-ocean" onclick="setTheme('ocean', this)" title="Ocean"></div>
-        <div class="theme-option theme-forest" onclick="setTheme('forest', this)" title="Forest"></div>
-        <div class="theme-option theme-sunset" onclick="setTheme('sunset', this)" title="Sunset"></div>
-        <div class="theme-option theme-midnight" onclick="setTheme('midnight', this)" title="Midnight"></div>
+        <div class="theme-option theme-default active" data-theme="default" title="Default"></div>
+        <div class="theme-option theme-fire" data-theme="fire" title="Fire"></div>
+        <div class="theme-option theme-ocean" data-theme="ocean" title="Ocean"></div>
+        <div class="theme-option theme-forest" data-theme="forest" title="Forest"></div>
+        <div class="theme-option theme-sunset" data-theme="sunset" title="Sunset"></div>
+        <div class="theme-option theme-midnight" data-theme="midnight" title="Midnight"></div>
       </div>
     </div>
     
-    <!-- Reset Stats -->
-    <button onclick="resetAllData()" class="w-full py-3 mt-4 rounded-xl bg-red-500/20 text-red-400 font-semibold border border-red-500/30 active:scale-95 transition">
+    <button id="resetBtn" class="w-full py-3 mt-2 rounded-xl bg-red-500/20 text-red-400 font-semibold text-sm border border-red-500/30 active:scale-95 transition">
       Reset All Progress
     </button>
   </div>
 </div>
 
 <!-- Back Button -->
-<button class="back-btn" id="backBtn" onclick="backToMenu()">
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+<button class="back-btn" id="backBtn">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
     <path d="M19 12H5M12 19l-7-7 7-7"></path>
   </svg>
 </button>
 
 <!-- Game Screen -->
 <div class="game-screen" id="gameScreen">
-  <header class="px-4 pt-16 pb-2">
-    <div class="flex gap-3 justify-center mb-4">
+  <div class="game-header">
+    <div class="stats-row">
       <div class="stat-card">
         <div class="stat-value text-green-400" id="wins">0</div>
         <div class="stat-label">Wins</div>
@@ -699,30 +790,28 @@ body {
         <div class="stat-label">Level</div>
       </div>
     </div>
-  </header>
+  </div>
 
-  <main class="px-4 py-2">
-    <div class="mb-4">
-      <div class="mode-scroll" id="modeSelector">
-        <button class="mode-btn active" onclick="setMode('ai-hard')">🔥 Hard AI</button>
-        <button class="mode-btn" onclick="setMode('ai-easy')">🤖 Easy</button>
-        <button class="mode-btn" onclick="setMode('2p')">👥 2 Players</button>
-      </div>
+  <div class="game-container">
+    <div class="mode-scroll">
+      <button class="mode-btn active" data-mode="ai-hard">🔥 Hard AI</button>
+      <button class="mode-btn" data-mode="ai-easy">🤖 Easy</button>
+      <button class="mode-btn" data-mode="2p">👥 2 Players</button>
     </div>
 
-    <div class="text-center mb-4">
+    <div class="status-container">
       <div class="status-bar">
         <div class="turn-indicator" id="turnIndicator"></div>
         <span id="statusText">Your Turn</span>
       </div>
-      <div class="h-1 w-32 mx-auto mt-3 bg-gray-700 rounded-full overflow-hidden">
-        <div class="h-full bg-gradient-to-r from-blue-400 to-pink-400 w-0 transition-all duration-300" id="timerBar"></div>
+      <div class="timer-bar-container">
+        <div class="timer-bar" id="timerBar"></div>
       </div>
     </div>
 
     <div id="board"></div>
 
-    <div class="ad-container glass mt-4">
+    <div class="ad-container glass">
       <ins class="adsbygoogle"
            style="display:block;width:300px;height:250px"
            data-ad-client="ca-pub-6851464163673391"
@@ -730,19 +819,19 @@ body {
            data-ad-format="auto"
            data-full-width-responsive="true"></ins>
     </div>
-  </main>
+  </div>
 </div>
 
 <!-- Bottom Navigation -->
 <nav class="bottom-nav" id="bottomNav">
-  <button class="nav-btn" onclick="newGame()">
+  <button class="nav-btn" id="newGameBtn">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
       <polygon points="5 3 19 12 5 21 5 3"></polygon>
     </svg>
     <span>New Game</span>
   </button>
   
-  <button class="nav-btn" onclick="openSettings()">
+  <button class="nav-btn" id="gameSettingsBtn">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
       <circle cx="12" cy="12" r="3"></circle>
       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -750,7 +839,7 @@ body {
     <span>Settings</span>
   </button>
   
-  <button class="nav-btn" onclick="backToMenu()">
+  <button class="nav-btn" id="menuBtn">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
       <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
       <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -774,7 +863,6 @@ let playerData = {
   level: 1
 };
 
-// Settings State
 let settings = {
   sound: true,
   music: false,
@@ -788,40 +876,42 @@ const winConditions = [
   [0,4,8], [2,4,6]
 ];
 
-// Audio Context
+// Audio
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
 function playSound(type) {
   if (!settings.sound) return;
+  if (audioContext.state === 'suspended') audioContext.resume();
   
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
+  const osc = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  osc.connect(gain);
+  gain.connect(audioContext.destination);
   
   if (type === 'move') {
-    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.1);
+    osc.frequency.setValueAtTime(600, audioContext.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(300, audioContext.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    osc.start(audioContext.currentTime);
+    osc.stop(audioContext.currentTime + 0.1);
   } else if (type === 'win') {
-    oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
-    oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1);
-    oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2);
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.6);
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.6);
+    [523.25, 659.25, 783.99].forEach((freq, i) => {
+      const o = audioContext.createOscillator();
+      const g = audioContext.createGain();
+      o.connect(g);
+      g.connect(audioContext.destination);
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(0.15, audioContext.currentTime + i * 0.1);
+      g.gain.linearRampToValueAtTime(0, audioContext.currentTime + i * 0.1 + 0.3);
+      o.start(audioContext.currentTime + i * 0.1);
+      o.stop(audioContext.currentTime + i * 0.1 + 0.3);
+    });
   }
 }
 
 function vibrate(pattern) {
-  if (settings.haptic && navigator.vibrate) {
-    navigator.vibrate(pattern);
-  }
+  if (settings.haptic && navigator.vibrate) navigator.vibrate(pattern);
 }
 
 // Initialize
@@ -829,23 +919,50 @@ document.addEventListener('DOMContentLoaded', () => {
   loadData();
   loadSettings();
   initAds();
+  bindEvents();
 });
 
-// Menu Functions
+function bindEvents() {
+  // Menu buttons
+  document.getElementById('playBtn').addEventListener('click', startGame);
+  document.getElementById('settingsBtn').addEventListener('click', openSettings);
+  document.getElementById('closeSettings').addEventListener('click', closeSettings);
+  document.getElementById('backBtn').addEventListener('click', backToMenu);
+  document.getElementById('newGameBtn').addEventListener('click', newGame);
+  document.getElementById('gameSettingsBtn').addEventListener('click', openSettings);
+  document.getElementById('menuBtn').addEventListener('click', backToMenu);
+  document.getElementById('resetBtn').addEventListener('click', resetAllData);
+  
+  // Settings toggles
+  document.getElementById('soundToggle').addEventListener('click', toggleSound);
+  document.getElementById('musicToggle').addEventListener('click', toggleMusic);
+  document.getElementById('hapticToggle').addEventListener('click', toggleHaptic);
+  
+  // Theme options
+  document.querySelectorAll('.theme-option').forEach(el => {
+    el.addEventListener('click', () => setTheme(el.dataset.theme, el));
+  });
+  
+  // Mode buttons
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => setMode(btn.dataset.mode, btn));
+  });
+  
+  // Touch fix for iOS
+  document.addEventListener('touchstart', function(){}, {passive: true});
+}
+
+// Navigation
 function startGame() {
   document.getElementById('menuScreen').classList.add('hidden');
   document.getElementById('gameScreen').classList.add('active');
   document.getElementById('backBtn').classList.add('active');
   document.getElementById('bottomNav').classList.add('active');
   
+  if (audioContext.state === 'suspended') audioContext.resume();
   createBoard();
   updateUI();
   updateStatus();
-  
-  // Resume audio context if needed
-  if (audioContext.state === 'suspended') {
-    audioContext.resume();
-  }
 }
 
 function backToMenu() {
@@ -855,7 +972,7 @@ function backToMenu() {
   document.getElementById('menuScreen').classList.remove('hidden');
 }
 
-// Settings Functions
+// Settings
 function openSettings() {
   document.getElementById('settingsModal').classList.add('active');
 }
@@ -866,32 +983,29 @@ function closeSettings() {
 
 function toggleSound() {
   settings.sound = !settings.sound;
-  document.getElementById('soundToggle').classList.toggle('active');
+  document.getElementById('soundToggle').classList.toggle('active', settings.sound);
   saveSettings();
   if (settings.sound) playSound('move');
 }
 
 function toggleMusic() {
   settings.music = !settings.music;
-  document.getElementById('musicToggle').classList.toggle('active');
+  document.getElementById('musicToggle').classList.toggle('active', settings.music);
   saveSettings();
 }
 
 function toggleHaptic() {
   settings.haptic = !settings.haptic;
-  document.getElementById('hapticToggle').classList.toggle('active');
+  document.getElementById('hapticToggle').classList.toggle('active', settings.haptic);
   saveSettings();
   vibrate(50);
 }
 
 function setTheme(themeName, element) {
   settings.theme = themeName;
-  
-  // Update UI selection
   document.querySelectorAll('.theme-option').forEach(el => el.classList.remove('active'));
   element.classList.add('active');
   
-  // Apply theme
   const gradients = {
     'default': 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)',
     'fire': 'linear-gradient(135deg, #1a1a2e, #e94560, #0f3460)',
@@ -901,12 +1015,13 @@ function setTheme(themeName, element) {
     'midnight': 'linear-gradient(135deg, #2c3e50, #34495e, #2c3e50)'
   };
   
-  document.body.style.background = gradients[themeName];
-  document.getElementById('menuScreen').style.background = gradients[themeName];
+  const bg = gradients[themeName];
+  document.body.style.background = bg;
+  document.getElementById('menuScreen').style.background = bg;
   saveSettings();
 }
 
-// Game Functions
+// Game Logic
 function createBoard() {
   const boardEl = document.getElementById('board');
   boardEl.innerHTML = '';
@@ -914,7 +1029,15 @@ function createBoard() {
     const cell = document.createElement('div');
     cell.className = 'cell';
     cell.dataset.index = i;
+    
+    // Fix touch events
+    cell.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      handleMove(i);
+    }, {passive: false});
+    
     cell.addEventListener('click', () => handleMove(i));
+    
     boardEl.appendChild(cell);
   }
 }
@@ -923,7 +1046,7 @@ function handleMove(index) {
   if (!gameActive || board[index] !== '') return;
   
   playSound('move');
-  vibrate(30);
+  vibrate(20);
   
   makeMove(index, currentPlayer);
   
@@ -932,7 +1055,7 @@ function handleMove(index) {
     setTimeout(() => {
       aiMove();
       document.getElementById('board').style.pointerEvents = 'auto';
-    }, 600);
+    }, 500);
   }
 }
 
@@ -1062,6 +1185,7 @@ function checkWin() {
   saveData();
   updateUI();
   
+  // Auto reset timer
   let timeLeft = 3;
   const timer = setInterval(() => {
     document.getElementById('timerBar').style.width = ((3 - timeLeft) / 3 * 100) + '%';
@@ -1086,8 +1210,9 @@ function updateStatus() {
   const isPlayer = currentPlayer === 'X';
   const text = gameMode === '2p' ? `Player ${currentPlayer}` : isPlayer ? 'Your' : 'AI';
   document.getElementById('statusText').textContent = `${text} Turn`;
-  document.getElementById('turnIndicator').style.background = isPlayer ? '#60a5fa' : '#f472b6';
-  document.getElementById('turnIndicator').style.boxShadow = `0 0 10px ${isPlayer ? '#60a5fa' : '#f472b6'}`;
+  const color = isPlayer ? '#60a5fa' : '#f472b6';
+  document.getElementById('turnIndicator').style.background = color;
+  document.getElementById('turnIndicator').style.boxShadow = `0 0 8px ${color}`;
 }
 
 function showStatus(text, color) {
@@ -1106,10 +1231,10 @@ function newGame() {
   refreshAds();
 }
 
-function setMode(mode) {
+function setMode(mode, btn) {
   gameMode = mode;
-  document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
   newGame();
 }
 
@@ -1120,16 +1245,14 @@ function updateUI() {
   document.getElementById('level').textContent = playerData.level;
 }
 
-// Data Management
+// Data
 function saveData() {
   localStorage.setItem('ttt-data', JSON.stringify(playerData));
 }
 
 function loadData() {
   const saved = localStorage.getItem('ttt-data');
-  if (saved) {
-    playerData = { ...playerData, ...JSON.parse(saved) };
-  }
+  if (saved) playerData = { ...playerData, ...JSON.parse(saved) };
 }
 
 function saveSettings() {
@@ -1140,22 +1263,19 @@ function loadSettings() {
   const saved = localStorage.getItem('ttt-settings');
   if (saved) {
     settings = JSON.parse(saved);
-    
-    // Apply loaded settings
     document.getElementById('soundToggle').classList.toggle('active', settings.sound);
     document.getElementById('musicToggle').classList.toggle('active', settings.music);
     document.getElementById('hapticToggle').classList.toggle('active', settings.haptic);
     
-    // Apply theme
     if (settings.theme) {
-      const themeEl = document.querySelector(`.theme-${settings.theme}`);
+      const themeEl = document.querySelector(`[data-theme="${settings.theme}"]`);
       if (themeEl) setTheme(settings.theme, themeEl);
     }
   }
 }
 
 function resetAllData() {
-  if (confirm('Reset ALL progress and settings? This cannot be undone!')) {
+  if (confirm('Reset ALL progress and settings?')) {
     playerData = { name: 'Player', wins: 0, losses: 0, draws: 0, xp: 0, level: 1 };
     settings = { sound: true, music: false, haptic: true, theme: 'default' };
     localStorage.removeItem('ttt-data');
@@ -1167,22 +1287,27 @@ function resetAllData() {
 // Confetti
 const canvas = document.getElementById('confetti-canvas');
 const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
 function fireConfetti() {
   const particles = [];
   const colors = ['#60a5fa', '#f472b6', '#fbbf24', '#34d399', '#a78bfa'];
   
-  for (let i = 0; i < 80; i++) {
+  for (let i = 0; i < 60; i++) {
     particles.push({
       x: canvas.width / 2,
       y: canvas.height / 2,
-      vx: (Math.random() - 0.5) * 15,
-      vy: (Math.random() - 0.5) * 15 - 5,
+      vx: (Math.random() - 0.5) * 12,
+      vy: (Math.random() - 0.5) * 12 - 4,
       life: 1,
       color: colors[Math.floor(Math.random() * colors.length)],
-      size: Math.random() * 6 + 2
+      size: Math.random() * 5 + 2
     });
   }
   
@@ -1193,8 +1318,8 @@ function fireConfetti() {
     particles.forEach((p, i) => {
       p.x += p.vx;
       p.y += p.vy;
-      p.vy += 0.3;
-      p.life -= 0.02;
+      p.vy += 0.25;
+      p.life -= 0.015;
       p.size *= 0.98;
       
       ctx.fillStyle = p.color;
@@ -1230,17 +1355,11 @@ function refreshAds() {
   }
 }
 
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
-
+// Prevent double-tap zoom
 let lastTouchEnd = 0;
 document.addEventListener('touchend', (e) => {
   const now = Date.now();
-  if (now - lastTouchEnd <= 300) {
-    e.preventDefault();
-  }
+  if (now - lastTouchEnd <= 300) e.preventDefault();
   lastTouchEnd = now;
 }, false);
 </script>
